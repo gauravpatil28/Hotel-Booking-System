@@ -56,7 +56,7 @@ func getRoutes() http.Handler {
 	errorLog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 	app.ErrorLog = errorLog
 
-	repo := NewRepo(&app)
+	repo := NewRepo(&app, nil)
 	NewHandlers(repo)
 	render.NewTemplates(&app)
 

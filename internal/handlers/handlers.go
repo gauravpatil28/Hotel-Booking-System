@@ -6,10 +6,13 @@ import (
 	"net/http"
 
 	"github.com/gauravpatil28/booking/internal/config"
+	"github.com/gauravpatil28/booking/internal/driver"
 	"github.com/gauravpatil28/booking/internal/forms"
 	"github.com/gauravpatil28/booking/internal/helpers"
 	"github.com/gauravpatil28/booking/internal/models"
 	"github.com/gauravpatil28/booking/internal/render"
+	"github.com/gauravpatil28/booking/internal/repository"
+	"github.com/gauravpatil28/booking/internal/repository/dbrepo"
 )
 
 // Repo the repository used by the handlers
@@ -18,12 +21,14 @@ var Repo *Repository
 // Repository is the repository type
 type Repository struct {
 	App *config.AppConfig
+	DB  repository.DatabaseRepo
 }
 
 // NewRepo creates a new repository
-func NewRepo(a *config.AppConfig) *Repository {
+func NewRepo(a *config.AppConfig, db *driver.DB) *Repository {
 	return &Repository{
 		App: a,
+		DB:  dbrepo.NewPostgresRepo(db.SQL, a),
 	}
 }
 
