@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"testing"
 	"time"
 
 	"github.com/alexedwards/scs/v2"
@@ -26,7 +27,7 @@ var functions = template.FuncMap{}
 var infoLog *log.Logger
 var errorLog *log.Logger
 
-func getRoutes() http.Handler {
+func TestMain(m *testing.M) {
 	gob.Register(models.Reservation{})
 
 	// change this to true when in production
@@ -56,9 +57,12 @@ func getRoutes() http.Handler {
 	errorLog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 	app.ErrorLog = errorLog
 
-	repo := NewRepo(&app, nil)
+	repo := NewTestRepo(&app)
 	NewHandlers(repo)
 	render.NewRenderer(&app)
+}
+
+func getRoutes() http.Handler {
 
 	mux := chi.NewRouter()
 
@@ -108,7 +112,7 @@ func CreateTestTemplateCache() (map[string]*template.Template, error) {
 
 	myCache := map[string]*template.Template{}
 
-	pages, err := filepath.Glob(fmt.Sprintf("%s/*.page.tmpl", pathtoTemplates))
+	pages, err := filepath.Glob(fmt.Sprintf("%s/*.page.html", pathtoTemplates))
 	if err != nil {
 		return myCache, err
 	}
@@ -120,13 +124,13 @@ func CreateTestTemplateCache() (map[string]*template.Template, error) {
 			return myCache, err
 		}
 
-		matches, err := filepath.Glob(fmt.Sprintf("%s/*.layout.tmpl", pathtoTemplates))
+		matches, err := filepath.Glob(fmt.Sprintf("%s/*.layout.html", pathtoTemplates))
 		if err != nil {
 			return myCache, err
 		}
 
 		if len(matches) > 0 {
-			ts, err = ts.ParseGlob(fmt.Sprintf("%s/*.layout.tmpl", pathtoTemplates))
+			ts, err = ts.ParseGlob(fmt.Sprintf("%s/*.layout.html", pathtoTemplates))
 			if err != nil {
 				return myCache, err
 			}
