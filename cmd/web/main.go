@@ -32,6 +32,16 @@ func main() {
 	}
 	defer db.SQL.Close()
 
+	defer close(app.MailChan)
+
+	fmt.Println("Starting Mail listner")
+
+	listenForMail()
+
+	
+
+	// smtp is a package in standard library package for mail sending(sample mail transfer protocol)
+
 	fmt.Println(fmt.Sprintf("Staring application on port %s", portNumber))
 
 	srv := &http.Server{
@@ -51,6 +61,9 @@ func run() (*driver.DB, error) {
 	gob.Register(models.User{})
 	gob.Register(models.Room{})
 	gob.Register(models.Restriction{})
+
+	mailchan := make(chan models.MailData)
+	app.MailChan = mailchan
 
 	// change this to true when in production
 	app.InProduction = false

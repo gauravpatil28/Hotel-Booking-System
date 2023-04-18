@@ -1,8 +1,8 @@
 package models
 
-import "time"
-
-// Reservation holds reservation data
+import (
+	"time"
+)
 
 type User struct {
 	ID          int
@@ -22,6 +22,7 @@ type Room struct {
 	UpdatedAt time.Time
 }
 
+// Reservation holds reservation data
 type Restriction struct {
 	ID              int
 	RestrictionName string
@@ -55,4 +56,11 @@ type RoomRestriction struct {
 	Room          Room
 	Reservation   Reservation
 	Restriction   Restriction
+}
+
+type MailData struct {
+	To      string
+	From    string
+	Subject string
+	Content string
 }
