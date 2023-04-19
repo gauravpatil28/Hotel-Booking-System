@@ -48,7 +48,7 @@ func sendMail(m models.MailData) {
 		}
 
 		mailTemplate := string(data)
-		msgtoSend := strings.Replace(mailTemplate, "[%body%]", m.Content, 1)
+		msgtoSend := strings.Replace(mailTemplate, "{{%content}}", m.Content, 1)
 		email.SetBody(mail.TextHTML, msgtoSend)
 	}
 	err = email.Send(client)

@@ -127,7 +127,7 @@ func CreateTestTemplateCache() (map[string]*template.Template, error) {
 
 	myCache := map[string]*template.Template{}
 
-	pages, err := filepath.Glob(fmt.Sprintf("%s/*.page.html", pathtoTemplates))
+	pages, err := filepath.Glob(fmt.Sprintf("%s/*.page.gohtml", pathtoTemplates))
 	if err != nil {
 		return myCache, err
 	}
@@ -139,13 +139,13 @@ func CreateTestTemplateCache() (map[string]*template.Template, error) {
 			return myCache, err
 		}
 
-		matches, err := filepath.Glob(fmt.Sprintf("%s/*.layout.html", pathtoTemplates))
+		matches, err := filepath.Glob(fmt.Sprintf("%s/*.layout.gohtml", pathtoTemplates))
 		if err != nil {
 			return myCache, err
 		}
 
 		if len(matches) > 0 {
-			ts, err = ts.ParseGlob(fmt.Sprintf("%s/*.layout.html", pathtoTemplates))
+			ts, err = ts.ParseGlob(fmt.Sprintf("%s/*.layout.gohtml", pathtoTemplates))
 			if err != nil {
 				return myCache, err
 			}
