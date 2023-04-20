@@ -62,3 +62,10 @@ func (m *testDBRepo) Authenticate(email, testPassword string) (int, string, erro
 
 	return 0, "", nil
 }
+
+func (m *testDBRepo) AllReservation() ([]models.Reservation, error) {
+
+	var reservation []models.Reservation
+
+	return reservation, nil
+}
