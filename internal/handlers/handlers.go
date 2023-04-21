@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gauravpatil28/booking/internal/config"
@@ -460,7 +461,20 @@ func (m *Repository) AdminDashboard(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m *Repository) AdminNewReservation(w http.ResponseWriter, r *http.Request) {
-	render.Template(w, r, "admin-new-reservation.page.tmpl", &models.TemplateData{})
+
+	reservations, err := m.DB.AllNewReservation()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	data := make(map[string]interface{})
+
+	data["reservation"] = reservations
+
+	render.Template(w, r, "admin-new-reservation.page.tmpl", &models.TemplateData{
+		Data: data,
+	})
 }
 
 func (m *Repository) AdminAllReservation(w http.ResponseWriter, r *http.Request) {
@@ -480,6 +494,117 @@ func (m *Repository) AdminAllReservation(w http.ResponseWriter, r *http.Request)
 	})
 }
 
+func (m *Repository) AdminShowReservation(w http.ResponseWriter, r *http.Request) {
+
+	split := strings.Split(r.RequestURI, "/")
+
+	id, err := strconv.Atoi(split[4])
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	src := split[3]
+
+	res, err := m.DB.GetReservationByID(id)
+	if err != nil {
+		log.Println(err)
+		panic(err)
+		helpers.ServerError(w, err)
+		return
+	}
+
+	data := make(map[string]interface{})
+	data["reservation"] = res
+
+	stringMap := make(map[string]string)
+	stringMap["src"] = src
+
+	render.Template(w, r, "admin-reservation-show.page.tmpl", &models.TemplateData{
+		StringMap: stringMap,
+		Data:      data,
+		Form:      forms.New(nil),
+	})
+}
+
+func (m *Repository) AdminShowPostReservation(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	split := strings.Split(r.RequestURI, "/")
+
+	id, err := strconv.Atoi(split[4])
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	src := split[3]
+
+	res, err := m.DB.GetReservationByID(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	res.FirstName = r.Form.Get("first_name")
+	res.LastName = r.Form.Get("last_name")
+	res.Email = r.Form.Get("email")
+	res.Phone = r.Form.Get("phone")
+
+	err = m.DB.UpdateReservation(res)
+	if err != nil {
+		log.Println(err)
+		helpers.ServerError(w, err)
+		return
+	}
+
+	m.App.Session.Put(r.Context(), "flash", "Changes Saved")
+	http.Redirect(w, r, fmt.Sprintf("/admin/reservation-%s", src), http.StatusSeeOther)
+}
+
 func (m *Repository) AdminReservationCalendar(w http.ResponseWriter, r *http.Request) {
 	render.Template(w, r, "admin-reservation-calendar.page.tmpl", &models.TemplateData{})
+}
+
+func (m *Repository) AdminProcessReservation(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	src := chi.URLParam(r, "src")
+
+	err = m.DB.UpdateProcessedForReservation(id, 1)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	m.App.Session.Put(r.Context(), "flash", "Changed Process ID")
+	http.Redirect(w, r, fmt.Sprintf("/admin/reservation-%s", src), http.StatusSeeOther)
+}
+
+func (m *Repository) AdminDeleteReservation(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	src := chi.URLParam(r, "src")
+
+	err = m.DB.DeleteReservation(id)
+	if err != nil {
+		log.Println(err)
+		helpers.ServerError(w, err)
+		return
+	}
+
+	m.App.Session.Put(r.Context(), "flash", "Deleted Reservation")
+	http.Redirect(w, r, fmt.Sprintf("/admin/reservation-%s", src), http.StatusSeeOther)
 }
