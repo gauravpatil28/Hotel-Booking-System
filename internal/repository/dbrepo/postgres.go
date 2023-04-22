@@ -437,3 +437,83 @@ func (m *postgresDBRepo) UpdateProcessedForReservation(id, processed int) error 
 	return nil
 
 }
+
+func (m *postgresDBRepo) AllRooms() ([]models.Room, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+
+	defer cancel()
+
+	query := `select id, room_name, created_at, updated_at from rooms order by room_name`
+
+	var rooms []models.Room
+
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		return rooms, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var rm models.Room
+		rows.Scan(
+			&rm.ID,
+			&rm.RoomName,
+			&rm.CreatedAt,
+			&rm.UpdatedAt,
+		)
+		if err != nil {
+			return rooms, err
+		}
+
+		rooms = append(rooms, rm)
+	}
+
+	if err = rows.Err(); err != nil {
+		return rooms, err
+	}
+
+	return rooms, nil
+}
+
+func (m *postgresDBRepo) GetRestrictionsForRoomByDate(roomId int, start, end time.Time) ([]models.RoomRestriction, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+
+	defer cancel()
+	//coalesce is an sql function if the value is nil it returns a 0
+	query := `select id, coalesce(reservation_id, 0), restriction_id, room_id, start_date, end_date
+	 from room_restrictions where $1 < end_date and $2 >= start_date 
+	 and room_id = $3`
+
+	var restrictions []models.RoomRestriction
+
+	rows, err := m.DB.QueryContext(ctx, query, start, end, roomId)
+	if err != nil {
+		return restrictions, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var rm models.RoomRestriction
+		rows.Scan(
+			&rm.ID,
+			&rm.ReservationID,
+			&rm.RestrictionID,
+			&rm.RoomID,
+			&rm.StartDate,
+			&rm.EndDate,
+		)
+		if err != nil {
+			return restrictions, err
+		}
+
+		restrictions = append(restrictions, rm)
+	}
+
+	if err = rows.Err(); err != nil {
+		return restrictions, err
+	}
+
+	return restrictions, nil
+}

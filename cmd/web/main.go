@@ -38,8 +38,6 @@ func main() {
 
 	listenForMail()
 
-	
-
 	// smtp is a package in standard library package for mail sending(sample mail transfer protocol)
 
 	fmt.Println(fmt.Sprintf("Staring application on port %s", portNumber))
@@ -61,6 +59,7 @@ func run() (*driver.DB, error) {
 	gob.Register(models.User{})
 	gob.Register(models.Room{})
 	gob.Register(models.Restriction{})
+	gob.Register(map[string]int{})
 
 	mailchan := make(chan models.MailData)
 	app.MailChan = mailchan

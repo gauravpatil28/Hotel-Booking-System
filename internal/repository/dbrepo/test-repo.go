@@ -95,3 +95,15 @@ func (m *testDBRepo) UpdateProcessedForReservation(id, processed int) error {
 	return nil
 
 }
+
+func (m *testDBRepo) AllRooms() ([]models.Room, error) {
+	var rooms []models.Room
+
+	return rooms, nil
+}
+
+func (m *testDBRepo) GetRestrictionsForRoomByDate(roomId int, start, end time.Time)([]models.RoomRestriction, error) {
+	var restrictions []models.RoomRestriction
+
+	return restrictions, nil
+}
