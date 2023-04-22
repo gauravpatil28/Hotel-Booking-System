@@ -52,14 +52,14 @@ func NewHandlers(r *Repository) {
 // Home is the handler for the home page
 func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
 
-	render.Template(w, r, "home.page.html", &models.TemplateData{})
+	render.Template(w, r, "home.page.tmpl", &models.TemplateData{})
 }
 
 // About is the handler for the about page
 func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
 
 	// send data to the template
-	render.Template(w, r, "about.page.html", &models.TemplateData{})
+	render.Template(w, r, "about.page.tmpl", &models.TemplateData{})
 }
 
 // Reservation renders the make a reservation page and displays form
@@ -92,7 +92,7 @@ func (m *Repository) Reservation(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]interface{})
 	data["reservation"] = res
 
-	render.Template(w, r, "make-reservation.page.html", &models.TemplateData{
+	render.Template(w, r, "make-reservation.page.tmpl", &models.TemplateData{
 		Form:      forms.New(nil),
 		Data:      data,
 		StringMap: stringMap,
@@ -129,7 +129,7 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 	if !form.Valid() {
 		data := make(map[string]interface{})
 		data["reservation"] = reservation
-		render.Template(w, r, "make-reservation.page.html", &models.TemplateData{
+		render.Template(w, r, "make-reservation.page.tmpl", &models.TemplateData{
 			Form: form,
 			Data: data,
 		})
@@ -201,17 +201,17 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 
 // Generals renders the room page
 func (m *Repository) Generals(w http.ResponseWriter, r *http.Request) {
-	render.Template(w, r, "generals.page.html", &models.TemplateData{})
+	render.Template(w, r, "generals.page.tmpl", &models.TemplateData{})
 }
 
 // Majors renders the room page
 func (m *Repository) Majors(w http.ResponseWriter, r *http.Request) {
-	render.Template(w, r, "majors.page.html", &models.TemplateData{})
+	render.Template(w, r, "majors.page.tmpl", &models.TemplateData{})
 }
 
 // Availability renders the search availability page
 func (m *Repository) Availability(w http.ResponseWriter, r *http.Request) {
-	render.Template(w, r, "search-availability.page.html", &models.TemplateData{})
+	render.Template(w, r, "search-availability.page.tmpl", &models.TemplateData{})
 }
 
 // PostAvailability handles post
@@ -256,7 +256,7 @@ func (m *Repository) PostAvailability(w http.ResponseWriter, r *http.Request) {
 
 	m.App.Session.Put(r.Context(), "reservation", res)
 
-	render.Template(w, r, "choose-room.page.html", &models.TemplateData{
+	render.Template(w, r, "choose-room.page.tmpl", &models.TemplateData{
 		Data: data,
 	})
 }
@@ -326,7 +326,7 @@ func (m *Repository) AvailabilityJSON(w http.ResponseWriter, r *http.Request) {
 
 // Contact renders the contact page
 func (m *Repository) Contact(w http.ResponseWriter, r *http.Request) {
-	render.Template(w, r, "contact.page.html", &models.TemplateData{})
+	render.Template(w, r, "contact.page.tmpl", &models.TemplateData{})
 }
 
 // ReservationSummary displays the res summary page
@@ -352,7 +352,7 @@ func (m *Repository) ReservationSummary(w http.ResponseWriter, r *http.Request) 
 	stringMap["start_date"] = sd
 	stringMap["end_date"] = ed
 
-	render.Template(w, r, "reservation-summary.page.html", &models.TemplateData{
+	render.Template(w, r, "reservation-summary.page.tmpl", &models.TemplateData{
 		Data:      data,
 		StringMap: stringMap,
 	})
@@ -409,7 +409,7 @@ func (m *Repository) BookRoom(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m *Repository) ShowLogin(w http.ResponseWriter, r *http.Request) {
-	render.Template(w, r, "login.page.html", &models.TemplateData{
+	render.Template(w, r, "login.page.tmpl", &models.TemplateData{
 		Form: forms.New(nil),
 	})
 }
@@ -427,7 +427,7 @@ func (m *Repository) PostShowLogin(w http.ResponseWriter, r *http.Request) {
 	form.Required("email", "password")
 	form.IsEmail("email")
 	if !form.Valid() {
-		render.Template(w, r, "login.page.html", &models.TemplateData{
+		render.Template(w, r, "login.page.tmpl", &models.TemplateData{
 			Form: form,
 		})
 		return
@@ -458,7 +458,7 @@ func (m *Repository) ShowLogout(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m *Repository) AdminDashboard(w http.ResponseWriter, r *http.Request) {
-	render.Template(w, r, "admin-dashboard.page.html", &models.TemplateData{})
+	render.Template(w, r, "admin-dashboard.page.tmpl", &models.TemplateData{})
 }
 
 func (m *Repository) AdminNewReservation(w http.ResponseWriter, r *http.Request) {
@@ -473,7 +473,7 @@ func (m *Repository) AdminNewReservation(w http.ResponseWriter, r *http.Request)
 
 	data["reservation"] = reservations
 
-	render.Template(w, r, "admin-new-reservation.page.html", &models.TemplateData{
+	render.Template(w, r, "admin-new-reservation.page.tmpl", &models.TemplateData{
 		Data: data,
 	})
 }
@@ -490,7 +490,7 @@ func (m *Repository) AdminAllReservation(w http.ResponseWriter, r *http.Request)
 
 	data["reservation"] = reservations
 
-	render.Template(w, r, "admin-all-reservation.page.html", &models.TemplateData{
+	render.Template(w, r, "admin-all-reservation.page.tmpl", &models.TemplateData{
 		Data: data,
 	})
 }
@@ -509,8 +509,7 @@ func (m *Repository) AdminShowReservation(w http.ResponseWriter, r *http.Request
 
 	res, err := m.DB.GetReservationByID(id)
 	if err != nil {
-		log.Println(err)
-		panic(err)
+
 		helpers.ServerError(w, err)
 		return
 	}
@@ -521,7 +520,7 @@ func (m *Repository) AdminShowReservation(w http.ResponseWriter, r *http.Request
 	stringMap := make(map[string]string)
 	stringMap["src"] = src
 
-	render.Template(w, r, "admin-reservation-show.page.html", &models.TemplateData{
+	render.Template(w, r, "admin-reservation-show.page.tmpl", &models.TemplateData{
 		StringMap: stringMap,
 		Data:      data,
 		Form:      forms.New(nil),
@@ -668,10 +667,10 @@ func (m *Repository) AdminReservationCalendar(w http.ResponseWriter, r *http.Req
 		reservationMap := make(map[string]int)
 		blockMap := make(map[string]int)
 
-		// for d := firstofMonth; !d.After(lastofMonth); d.AddDate(0, 0, 1) {
-		// 	reservationMap[d.Format("2006-01-02")] = 0
-		// 	blockMap[d.Format("2006-01-02")] = 0
-		// }
+		for d := firstofMonth; !d.After(lastofMonth); d = d.AddDate(0, 0, 1) {
+			reservationMap[d.Format("2006-01-02")] = 0
+			blockMap[d.Format("2006-01-02")] = 0
+		}
 
 		restrictions, err := m.DB.GetRestrictionsForRoomByDate(x.ID, firstofMonth, lastofMonth)
 		if err != nil {
@@ -687,7 +686,7 @@ func (m *Repository) AdminReservationCalendar(w http.ResponseWriter, r *http.Req
 				}
 			} else {
 				//its a block
-				blockMap[y.StartDate.Format("2006-01-02")] = y.RestrictionID
+				blockMap[y.StartDate.Format("2006-01-02")] = y.ID
 			}
 		}
 
@@ -697,7 +696,7 @@ func (m *Repository) AdminReservationCalendar(w http.ResponseWriter, r *http.Req
 		m.App.Session.Put(r.Context(), fmt.Sprintf("block_map_%d", x.ID), blockMap)
 	}
 
-	render.Template(w, r, "admin-reservation-calendar.page.html", &models.TemplateData{
+	render.Template(w, r, "admin-reservation-calendar.page.tmpl", &models.TemplateData{
 		StringMap: stringMap,
 		Data:      data,
 		IntMap:    intMap,
