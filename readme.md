@@ -5,4 +5,4 @@
 - Uses [alex edwards scs session management](github.com/alexedwards/scs)
 - Uses [nosurf](github.com/justinas/nosurf)
 
-[![Watch the video](https://i.stack.imgur.com/Vp2cE.png)]([https://youtu.be/vt5fpE0bzSY])
+[![Watch the video]]([https://youtu.be/vt5fpE0bzSY])
